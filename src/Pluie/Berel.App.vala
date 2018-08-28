@@ -1,30 +1,30 @@
 /*^* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *  
+ *
  *  @software    :    berel           <https://git.pluie.org/pluie/berel>
- *  @version     :    0.21       
- *  @type        :    program    
- *  @date        :    2018       
+ *  @version     :    0.21
+ *  @type        :    program
+ *  @date        :    2018
  *  @license     :    GPLv3.0         <http://www.gnu.org/licenses/>
  *  @author      :    a-Sansara       <[dev]at[pluie]dot[org]>
  *  @copyright   :    pluie.org       <http://www.pluie.org>
- *  
+ *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *  
+ *
  *  This file is part of berel.
- *  
+ *
  *  berel is free software (free as in speech) : you can redistribute it
  *  and/or modify it under the terms of the GNU General Public License as
  *  published by the Free Software Foundation, either version 3 of the License,
  *  or (at your option) any later version.
- *  
+ *
  *  berel is distributed in the hope that it will be useful, but WITHOUT
  *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  *  more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with berel.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *^*/
 
 using GLib;
@@ -93,13 +93,16 @@ public class Pluie.Berel.App
     private void write_header (Berel.HeaderDef header)
     {
         of.action ("write headers from header def", header.yaml_name);
-        var hasHeader = false;
         string? data  = null;
         string? path  = null;
         foreach (var name in header.file) {
             path = Path.build_filename(this.pwd, name);
             data = this.get_write_content(path, header);
-            this.write_file (path, data);
+            if (this.write_file (path, data)) {
+                if (header.yaml_name == "sh") {
+                    FileUtils.chmod (path, 0775);
+                }
+            }
         }
         foreach (var name in header.dir) {
             path = Path.build_filename(this.pwd, name);
@@ -115,15 +118,20 @@ public class Pluie.Berel.App
         of.echo (" > reading directory %s".printf (path));
         string? dname = null;
         string? data  = null;
-        Dir     dir   = Dir.open (path, 0);
-        while ((dname = dir.read_name ()) != null) {
-            string? p = Path.build_filename (path, dname);
-            if (FileUtils.test (p, FileTest.IS_DIR))
-                this.write_dir (p, header);
-            else {
-                data = this.get_write_content(p, header, true);
-                this.write_file (p, data);
+        try {
+            Dir     dir   = Dir.open (path, 0);
+            while ((dname = dir.read_name ()) != null) {
+                string? p = Path.build_filename (path, dname);
+                if (FileUtils.test (p, FileTest.IS_DIR))
+                    this.write_dir (p, header);
+                else {
+                    data = this.get_write_content(p, header, true);
+                    this.write_file (p, data);
+                }
             }
+        }
+        catch(GLib.FileError e) {
+            of.error (e.message);
         }
         of.echo (" < directory %s".printf (path));
     }

@@ -1,30 +1,30 @@
 /*^* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *  
+ *
  *  @software    :    berel           <https://git.pluie.org/pluie/berel>
- *  @version     :    0.21       
- *  @type        :    program    
- *  @date        :    2018       
+ *  @version     :    0.21
+ *  @type        :    program
+ *  @date        :    2018
  *  @license     :    GPLv3.0         <http://www.gnu.org/licenses/>
  *  @author      :    a-Sansara       <[dev]at[pluie]dot[org]>
  *  @copyright   :    pluie.org       <http://www.pluie.org>
- *  
+ *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *  
+ *
  *  This file is part of berel.
- *  
+ *
  *  berel is free software (free as in speech) : you can redistribute it
  *  and/or modify it under the terms of the GNU General Public License as
  *  published by the Free Software Foundation, either version 3 of the License,
  *  or (at your option) any later version.
- *  
+ *
  *  berel is distributed in the hope that it will be useful, but WITHOUT
  *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  *  more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with berel.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *^*/
 
 using GLib;
@@ -111,7 +111,7 @@ public class Pluie.Berel.Meta : Yaml.Object
                 sb.append("%s\n".printf (hd.comment.get_line(str, str==hd.sepline.to_string ())));
             }
         }
-        return "%s\n".printf (sb.str.substring (0, sb.str.length - 5 -(hd.sepline.motif[0] == ' ' ? 0 : 1) - hd.comment.end.length)+hd.comment.end);
+        return "%s%s\n".printf (sb.str.substring (0, sb.str.length - 3 - hd.comment.end.length), hd.comment.end);
     }
 
     /**
@@ -119,20 +119,25 @@ public class Pluie.Berel.Meta : Yaml.Object
      */
     public string tpl_replace_var (HeaderDef hd)
     {
-        MatchInfo? mi = null;
-        Regex     reg = new Regex ("\\^([^\\^]+)\\^");
         string    str = this.tpl;
         this.varlist  = new Gee.HashMap<string, string> ();
-        if (reg.match (str, 0, out mi)) {
-            this.define_var (mi.fetch (1), hd);
-            while (mi.next ()) {;
+        try {
+            MatchInfo? mi = null;
+            Regex     reg = new Regex ("\\^([^\\^]+)\\^");
+            if (reg.match (str, 0, out mi)) {
                 this.define_var (mi.fetch (1), hd);
+                while (mi.next ()) {;
+                    this.define_var (mi.fetch (1), hd);
+                }
+            }
+            foreach (var entry in this.varlist.entries) {
+                if (entry.value.length > 0) {
+                    str = str.replace("^%s^".printf (entry.key), (entry.key == "sepline" ? "" : "")+entry.value);
+                }
             }
         }
-        foreach (var entry in this.varlist.entries) {
-            if (entry.value.length > 0) {
-                str = str.replace("^%s^".printf (entry.key), (entry.key == "sepline" ? "" : "")+entry.value);
-            }
+        catch (GLib.RegexError e) {
+            of.error (e.message);
         }
         return str;
     }
@@ -186,14 +191,14 @@ public class Pluie.Berel.Meta : Yaml.Object
         }
         int count = 0;
         foreach (var bk in this.keys) {
-            sb.append (hd.comment.get_line("@%s%s :    %s%s%s%s".printf (
+            sb.append (hd.comment.get_line("@%s%s :    %s%s%s".printf (
                 bk.yaml_name, 
                 string.nfill(lenk+2-bk.yaml_name.length, ' '),
                 bk.name,
                 string.nfill(len+2-bk.name.length, ' '),
-                bk.address != null ? "    %s".printf (bk.address) : "",
-                count == this.keys.size -1 ? "" : "\n"
+                bk.address != null ? "    %s".printf (bk.address) : ""
             ),count++ == 0));
+            sb.append ("\n");
         }
         return sb.str;
     }

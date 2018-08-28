@@ -15,7 +15,7 @@
     - sh :
         file        :
             - build.sh
-        startline   : 2
+        startline   : 2 # to embed shebang before header tpl
         sepline     :
             motif       : "# "
             repeat      : 40
@@ -41,6 +41,7 @@
             - .vala
         file        :
             - install.vala.in
+            - main.vala
         startline   : 1
         sepline     :
             motif       : " *"
