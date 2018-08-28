@@ -27,21 +27,12 @@
  *  
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *^*/
 
-using GLib;
-using Pluie;
-
-public class Pluie.Berel.Key : Yaml.Object
-{
-    public string   name      { get; internal set; }
-    public string?  address   { get; internal set; }
-
-    public Key.with_node (Yaml.Node node)
+namespace Pluie
+{  
+    namespace Berel
     {
-        this.yaml_name = node.name;
-        if (node.ntype.is_single_pair ()) {
-            var s = node.first ().data.split (";");
-            this.name = s[0];
-            if (s.length > 1) this.address = s[1];
-        }
+        protected const string INSTALL_PATH = "@INSTALL_PATH@";
+        public    const string DATA_PATH    = "@DATA_PATH@";
+        public    const string VERSION      = "@VERSION@";
     }
 }
