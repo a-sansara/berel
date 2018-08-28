@@ -98,7 +98,7 @@ public class Pluie.Berel.App
         foreach (var name in header.file) {
             path = Path.build_filename(this.pwd, name);
             data = this.get_write_content(path, header);
-            if (this.write_file (path, data)) {
+            if (data.length > 0 && this.write_file (path, data)) {
                 if (header.yaml_name == "sh") {
                     FileUtils.chmod (path, 0775);
                 }
@@ -115,7 +115,6 @@ public class Pluie.Berel.App
      */
     private void write_dir (string path,  HeaderDef header)
     {
-        of.echo (" > reading directory %s".printf (path));
         string? dname = null;
         string? data  = null;
         try {
@@ -126,14 +125,13 @@ public class Pluie.Berel.App
                     this.write_dir (p, header);
                 else {
                     data = this.get_write_content(p, header, true);
-                    this.write_file (p, data);
+                    if (data.length > 00) this.write_file (p, data);
                 }
             }
         }
         catch(GLib.FileError e) {
             of.error (e.message);
         }
-        of.echo (" < directory %s".printf (path));
     }
 
     /**

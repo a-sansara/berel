@@ -26,7 +26,7 @@
     - meson :
         file        :
             - meson.build
-        startline   : 1
+            - src/meson.build
         sepline     :
             motif       : "# "
             repeat      : 40
@@ -39,10 +39,6 @@
             - src
         extension   : 
             - .vala
-        file        :
-            - install.vala.in
-            - main.vala
-        startline   : 1
         sepline     :
             motif       : " *"
             repeat      : 40

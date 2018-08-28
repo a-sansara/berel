@@ -34,7 +34,7 @@ public class Pluie.Berel.HeaderDef : Yaml.Object
 {
     public Gee.ArrayList<string> file      { get; set; }
     public Gee.ArrayList<string> dir       { get; set; }
-    public int                   startline { get; set; }
+    public int                   startline { get; set; default = 1; }
     public Berel.Sepline         sepline   { get; set; }
     public Gee.ArrayList<string> extension { get; set; }
     public Berel.Comment         comment   { get; set; }

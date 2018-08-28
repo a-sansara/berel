@@ -27,35 +27,12 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #^#
 
-project('berel', ['vala', 'c'], version:'0.21')
-
-conf = configuration_data()
-conf.set('VERSION'     , meson.project_version())
-conf.set('INSTALL_PATH', join_paths(get_option('prefix'), get_option('bindir')))
-conf.set('DATA_PATH'   , join_paths(get_option('prefix'), get_option('datadir'), 'pluie/berel'))
-
-configure_file(
-  input : 'src/install.vala',
-  output: 'install.vala',
-  configuration: conf
-)
-
-subdir('src')
-
-executable(
-    meson.project_name(), 
-    src_files +  [ 'build/install.vala' ], 
-    install : true, 
-    dependencies : [
-        dependency('glib-2.0'), 
-        dependency('gobject-2.0'), 
-        dependency('gmodule-2.0'), 
-        dependency('gio-2.0'), 
-        dependency('gee-0.8'), 
-        dependency('pluie-echo-0.2'), 
-        dependency('pluie-yaml-0.5'), 
-        meson.get_compiler('c').find_library('m', required : false)
-    ]
-)
-
-
+src_files = [
+    'src/Pluie/Berel.App.vala',
+    'src/Pluie/Berel.Comment.vala',
+    'src/Pluie/Berel.HeaderDef.vala',
+    'src/Pluie/Berel.Key.vala',
+    'src/Pluie/Berel.Meta.vala',
+    'src/Pluie/Berel.Sepline.vala',
+    'src/main.vala'
+]
