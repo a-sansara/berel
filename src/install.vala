@@ -1,7 +1,7 @@
 /*^* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  *  @software    :    berel           <https://git.pluie.org/pluie/berel>
- *  @version     :    0.21
+ *  @version     :    0.24
  *  @type        :    program
  *  @date        :    2018
  *  @license     :    GPLv3.0         <http://www.gnu.org/licenses/>
